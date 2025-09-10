@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Billing</h2>
+
+<form method="POST" action="{{ url_for('billing') }}" class="card" style="margin-bottom:16px;">
+  <h3>Create Invoice</h3>
+  <div class="row">
+    <input name="customer_name" placeholder="Customer Name">
+    <select name="product_id" required>
+      <option value="">-- Select Product --</option>
+      {% for p in products %}
+        <option value="{{ p.id }}">{{ p.name }} ({{ '%.2f'|format(p.price) }})</option>
+      {% endfor %}
+    </select>
+    <input name="qty" type="number" step="0.01" min="0.01" value="1" placeholder="Qty">
+  </div>
+  <button type="submit">Create Invoice</button>
+</form>
+
+<h3>Recent Invoices</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Invoice #</th><th>Customer</th><th>Grand Total</th><th>Date</th><th>View</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for inv in invoices %}
+      <tr>
+        <td>{{ inv.number }}</td>
+        <td>{{ inv.customer_name or '-' }}</td>
+        <td>{{ '%.2f'|format(inv.grand_total or 0) }}</td>
+        <td>{{ inv.created_at }}</td>
+        <td><a class="btn" href="{{ url_for('view_invoice', invoice_id=inv.id) }}">Open</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">No invoices yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

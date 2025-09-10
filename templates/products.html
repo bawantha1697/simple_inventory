@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Products</h2>
+
+<!-- Add Product -->
+<form method="POST" action="{{ url_for('add_product') }}" class="card" style="margin-bottom:16px;">
+  <h3 style="margin-top:0;">Add Product</h3>
+  <div class="row">
+    <input name="name" placeholder="Name" required>
+    <input name="price" type="number" step="0.01" placeholder="Price" required>
+    <input name="stock" type="number" step="0.01" placeholder="Stock" required>
+  </div>
+  <button type="submit">Add</button>
+</form>
+
+<!-- Search + Sort -->
+<form method="GET" action="{{ url_for('products') }}" class="card" style="margin-bottom:16px;">
+  <div class="row">
+    <input name="q" placeholder="Search by name" value="{{ q or '' }}">
+    <select name="sort">
+      <option value="id_desc"   {% if sort=='id_desc' %}selected{% endif %}>Newest</option>
+      <option value="id_asc"    {% if sort=='id_asc' %}selected{% endif %}>Oldest</option>
+      <option value="name_asc"  {% if sort=='name_asc' %}selected{% endif %}>Name A→Z</option>
+      <option value="name_desc" {% if sort=='name_desc' %}selected{% endif %}>Name Z→A</option>
+      <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price Low→High</option>
+      <option value="price_desc"{% if sort=='price_desc' %}selected{% endif %}>Price High→Low</option>
+      <option value="stock_asc" {% if sort=='stock_asc' %}selected{% endif %}>Stock Low→High</option>
+      <option value="stock_desc"{% if sort=='stock_desc' %}selected{% endif %}>Stock High→Low</option>
+    </select>
+  </div>
+  <button type="submit">Apply</button>
+  {% if q %}
+    <a href="{{ url_for('products') }}" class="btn" style="margin-left:8px;">Clear</a>
+  {% endif %}
+</form>
+
+<!-- Products Table -->
+<table class="table">
+  <thead>
+    <tr>
+      <th style="width:60px;">ID</th>
+      <th>Name</th>
+      <th style="width:140px;">Price</th>
+      <th style="width:140px;">Stock</th>
+      <th style="width:200px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in items %}
+    <tr>
+      <form method="POST" action="{{ url_for('update_product', pid=i.id) }}">
+        <td>{{ i.id }}</td>
+        <td><input name="name" value="{{ i.name }}" required></td>
+        <td><input name="price" type="number" step="0.01" value="{{ i.price }}" required></td>
+        <td><input name="stock" type="number" step="0.01" value="{{ i.stock }}" required></td>
+        <td class="actions">
+          <button type="submit">Save</button>
+      </form>
+          <form method="POST" action="{{ url_for('delete_product', pid=i.id) }}"
+                onsubmit="return confirm('Delete this product?')" style="display:inline;">
+            <button type="submit" class="danger">Delete</button>
+          </form>
+        </td>
+    </tr>
+  {% else %}
+    <!-- 👇 This shows when there are no products yet -->
+    <tr><td colspan="5">No products yet. Use the form above to add your first one.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

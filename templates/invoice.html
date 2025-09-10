@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Invoice {{ inv.number }}</h2>
+<div class="card">
+  <p><strong>Customer:</strong> {{ inv.customer_name or '-' }}</p>
+  <p><strong>Date:</strong> {{ inv.created_at }}</p>
+
+  <table class="table">
+    <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>{{ it.product_name }}</td>
+        <td>{{ it.qty }}</td>
+        <td>{{ '%.2f'|format(it.unit_price) }}</td>
+        <td>{{ '%.2f'|format(it.line_total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><strong>Sub Total:</strong> {{ '%.2f'|format(inv.total or 0) }}</div>
+    <div><strong>Tax:</strong> {{ '%.2f'|format(inv.tax or 0) }}</div>
+    <div><strong>Discount:</strong> {{ '%.2f'|format(inv.discount or 0) }}</div>
+    <div><strong>Grand Total:</strong> {{ '%.2f'|format(inv.grand_total or 0) }}</div>
+  </div>
+</div>
+{% endblock %}

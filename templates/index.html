@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dashboard</h2>
+
+<!-- Summary cards -->
+<div class="cards">
+  <div class="card"><h3>Total Products</h3><p>{{ product_count }}</p></div>
+  <div class="card"><h3>Total Invoices</h3><p>{{ invoice_count }}</p></div>
+  <div class="card"><h3>Total Revenue</h3><p>{{ '%.2f'|format(revenue or 0) }}</p></div>
+  <div class="card"><h3>Last 7 Days</h3><p>{{ '%.2f'|format(last7 or 0) }}</p></div>
+</div>
+
+<div class="grid2">
+  <!-- Low stock panel -->
+  <div class="card">
+    <h3>Low Stock (≤ 5)</h3>
+    <table class="table">
+      <thead><tr><th>Product</th><th>Stock</th></tr></thead>
+      <tbody>
+        {% for i in low_stock %}
+          <tr><td>{{ i.name }}</td><td>{{ i.stock }}</td></tr>
+        {% else %}
+          <tr><td colspan="2">No low stock items 🎉</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recent invoices -->
+  <div class="card">
+    <h3>Recent Invoices</h3>
+    <table class="table">
+      <thead><tr><th>#</th><th>Customer</th><th>Grand</th><th>Date</th><th></th></tr></thead>
+      <tbody>
+        {% for inv in recent_invoices %}
+          <tr>
+            <td>{{ inv.number }}</td>
+            <td>{{ inv.customer_name }}</td>
+            <td>{{ '%.2f'|format(inv.grand_total or 0) }}</td>
+            <td>{{ inv.created_at }}</td>
+            <td><a href="{{ url_for('view_invoice', invoice_id=inv.id) }}">Open</a></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">No invoices yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Top products -->
+<div class="card">
+  <h3>Top Products (by Qty Sold)</h3>
+  <table class="table">
+    <thead><tr><th>Product</th><th>Qty Sold</th></tr></thead>
+    <tbody>
+      {% for tp in top_products %}
+        <tr><td>{{ tp.name }}</td><td>{{ tp.qty_sold }}</td></tr>
+      {% else %}
+        <tr><td colspan="2">No sales yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
